@@ -39,11 +39,13 @@ botoes = [
 ]
 
 for linha in botoes:
-    colunas = st.columns(4)
+    # Cria 4 colunas para cada linha de botões
+    cols = st.columns(4) 
     for i, btn in enumerate(linha):
         if btn == "":
-            colunas[i].empty()
-        elif colunas[i].button(btn, use_container_width=True):
+            # Se o botão for vazio (para o layout 0 . =), ele não renderiza nada
+            cols[i].empty()
+        elif cols[i].button(btn, use_container_width=True):
             if btn == "C":
                 limpar()
             elif btn == "⌫":
