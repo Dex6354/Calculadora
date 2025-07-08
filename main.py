@@ -2,13 +2,14 @@ import streamlit as st
 
 st.set_page_config(page_title="Calculadora", layout="centered")
 
-# Título com fonte menor
-st.markdown("<h2 style='text-align: center;'>🧮 Calculadora</h2>", unsafe_allow_html=True)
+# Título pequeno centralizado
+st.markdown("<h2 style='text-align: center;'>Calculadora</h2>", unsafe_allow_html=True)
 
 # Estado da expressão
 if "expressao" not in st.session_state:
     st.session_state.expressao = ""
 
+# Funções de controle
 def adicionar(valor):
     st.session_state.expressao += str(valor)
 
@@ -18,39 +19,39 @@ def limpar():
 def apagar():
     st.session_state.expressao = st.session_state.expressao[:-1]
 
-# Campo de entrada
-st.session_state.expressao = st.text_input("", st.session_state.expressao, key="input")
+# Campo de entrada da expressão
+st.text_input(" ", value=st.session_state.expressao, key="input", label_visibility="collapsed")
 
-# Resultado automático
+# Resultado
 try:
     resultado = eval(st.session_state.expressao)
-    st.success(f"Resultado: {resultado}")
+    st.markdown(f"<h3 style='text-align: center;'>Resultado: {resultado}</h3>", unsafe_allow_html=True)
 except:
-    st.error("Resultado: Erro")
+    st.markdown("<h3 style='text-align: center;'>Resultado: Erro</h3>", unsafe_allow_html=True)
 
-# Layout dos botões (4 por linha)
+# Grade de botões estilo calculadora Android
 botoes = [
-    ["7", "8", "9", "/"],
-    ["4", "5", "6", "*"],
-    ["1", "2", "3", "-"],
-    ["0", ".", "=", "+"],
+    ["C", "⌫", "%", "/"],
+    ["7", "8", "9", "*"],
+    ["4", "5", "6", "-"],
+    ["1", "2", "3", "+"],
+    ["0", ".", "=", ""]
 ]
 
 for linha in botoes:
     cols = st.columns(4)
-    for i, item in enumerate(linha):
-        if cols[i].button(item, use_container_width=True):
-            if item == "=":
+    for i, btn in enumerate(linha):
+        if btn == "":
+            cols[i].empty()
+        elif cols[i].button(btn, use_container_width=True):
+            if btn == "C":
+                limpar()
+            elif btn == "⌫":
+                apagar()
+            elif btn == "=":
                 try:
                     st.session_state.expressao = str(eval(st.session_state.expressao))
                 except:
                     st.session_state.expressao = "Erro"
             else:
-                adicionar(item)
-
-# Linha de limpeza/apagar
-col1, col2 = st.columns(2)
-if col1.button("🧹 Limpar", use_container_width=True):
-    limpar()
-if col2.button("⌫ Apagar", use_container_width=True):
-    apagar()
+                adicionar(btn)
