@@ -2,14 +2,14 @@ import streamlit as st
 
 st.set_page_config(page_title="Calculadora", layout="centered")
 
-# Título pequeno centralizado
+# Título pequeno
 st.markdown("<h2 style='text-align: center;'>Calculadora</h2>", unsafe_allow_html=True)
 
-# Estado da expressão
+# Expressão persistente
 if "expressao" not in st.session_state:
     st.session_state.expressao = ""
 
-# Funções de controle
+# Funções
 def adicionar(valor):
     st.session_state.expressao += str(valor)
 
@@ -19,7 +19,7 @@ def limpar():
 def apagar():
     st.session_state.expressao = st.session_state.expressao[:-1]
 
-# Campo de entrada da expressão
+# Campo de entrada
 st.text_input(" ", value=st.session_state.expressao, key="input", label_visibility="collapsed")
 
 # Resultado
@@ -29,7 +29,7 @@ try:
 except:
     st.markdown("<h3 style='text-align: center;'>Resultado: Erro</h3>", unsafe_allow_html=True)
 
-# Grade de botões estilo calculadora Android
+# Grade de botões (4 por linha)
 botoes = [
     ["C", "⌫", "%", "/"],
     ["7", "8", "9", "*"],
@@ -39,11 +39,11 @@ botoes = [
 ]
 
 for linha in botoes:
-    cols = st.columns(4)
+    colunas = st.columns(4)
     for i, btn in enumerate(linha):
         if btn == "":
-            cols[i].empty()
-        elif cols[i].button(btn, use_container_width=True):
+            colunas[i].empty()
+        elif colunas[i].button(btn, use_container_width=True):
             if btn == "C":
                 limpar()
             elif btn == "⌫":
