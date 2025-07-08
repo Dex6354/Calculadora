@@ -1,30 +1,58 @@
 import streamlit as st
 
-# Título do app
-st.title("🧮 Calculadora Simples")
+st.set_page_config(page_title="Calculadora", layout="centered")
 
-# Entrada dos números
-num1 = st.number_input("Digite o primeiro número", value=0.0)
-num2 = st.number_input("Digite o segundo número", value=0.0)
+st.title("🧮 Calculadora")
 
-# Seleção da operação
-operacao = st.selectbox("Escolha a operação", ["Soma (+)", "Subtração (-)", "Multiplicação (×)", "Divisão (÷)"])
+# Estado persistente para a expressão
+if "expressao" not in st.session_state:
+    st.session_state.expressao = ""
 
-# Botão de calcular
-if st.button("Calcular"):
-    if operacao == "Soma (+)":
-        resultado = num1 + num2
-    elif operacao == "Subtração (-)":
-        resultado = num1 - num2
-    elif operacao == "Multiplicação (×)":
-        resultado = num1 * num2
-    elif operacao == "Divisão (÷)":
-        if num2 == 0:
-            st.error("Erro: Divisão por zero!")
-        else:
-            resultado = num1 / num2
+# Função para atualizar a expressão
+def adicionar(valor):
+    st.session_state.expressao += str(valor)
 
-    # Mostrar resultado se não deu erro
-    if operacao != "Divisão (÷)" or num2 != 0:
-        st.success(f"Resultado: {resultado}")
-      
+# Função para limpar
+def limpar():
+    st.session_state.expressao = ""
+
+# Função para apagar último caractere
+def apagar():
+    st.session_state.expressao = st.session_state.expressao[:-1]
+
+# Entrada da expressão (editável)
+st.session_state.expressao = st.text_input("Expressão", st.session_state.expressao, key="input", label_visibility="collapsed")
+
+# Resultado automático
+try:
+    resultado = eval(st.session_state.expressao)
+    st.markdown(f"### Resultado: `{resultado}`")
+except:
+    st.markdown("### Resultado: `Erro`")
+
+# Layout dos botões
+botoes = [
+    ["7", "8", "9", "/"],
+    ["4", "5", "6", "*"],
+    ["1", "2", "3", "-"],
+    ["0", ".", "=", "+"],
+]
+
+for linha in botoes:
+    cols = st.columns(len(linha))
+    for i, item in enumerate(linha):
+        if cols[i].button(item):
+            if item == "=":
+                try:
+                    st.session_state.expressao = str(eval(st.session_state.expressao))
+                except:
+                    st.session_state.expressao = "Erro"
+            else:
+                adicionar(item)
+
+# Linha de limpar e apagar
+col1, col2 = st.columns(2)
+if col1.button("🧹 Limpar"):
+    limpar()
+if col2.button("⌫ Apagar"):
+    apagar()
