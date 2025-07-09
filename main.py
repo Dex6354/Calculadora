@@ -29,52 +29,74 @@ try:
 except:
     st.markdown("<h3 style='text-align: center;'>Resultado: Erro</h3>", unsafe_allow_html=True)
 
+# Estilo CSS para a grade
+st.markdown("""
+    <style>
+    .calculator-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 80px);
+        gap: 5px;
+        justify-content: center;
+        padding: 10px;
+        max-width: 340px;
+        margin: 0 auto;
+    }
+    .calculator-grid button {
+        width: 100%;
+        height: 60px;
+        font-size: 20px;
+        border-radius: 10px;
+        border: none;
+        background-color: #f0f0f0;
+        cursor: pointer;
+    }
+    .calculator-grid button:hover {
+        background-color: #e0e0e0;
+    }
+    .zero-button {
+        grid-column: span 2;
+        width: 100%;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
 # Grade de botões
 botoes = [
     ["C", "⌫", "%", "/"],
     ["7", "8", "9", "*"],
     ["4", "5", "6", "-"],
     ["1", "2", "3", "+"],
-    ["0", ".", "="]
+    ["0", ".", "=", ""]
 ]
 
-# Estilo para botões
-st.markdown("""
-    <style>
-    .stButton > button {
-        width: 100%;
-        height: 60px;
-        font-size: 20px;
-        border-radius: 10px;
-        margin: 5px 0;
-    }
-    </style>
-""", unsafe_allow_html=True)
+# Renderizar a grade
+with st.container():
+    st.markdown('<div class="calculator-grid">', unsafe_allow_html=True)
+    for linha in botoes:
+        for btn in linha:
+            if btn == "":
+                continue  # Ignora botões vazios
+            # Aplica classe especial para o botão "0"
+            button_class = "zero-button" if btn == "0" else ""
+            button_html = f'''
+                <form method="post">
+                    <button type="submit" name="btn" value="{btn}" class="{button_class}">{btn}</button>
+                </form>
+            '''
+            st.markdown(button_html, unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
-for linha in botoes:
-    if linha[0] == "0":  # Linha com o botão "0" (layout especial)
-        cols = st.columns([2, 1, 1])  # "0" ocupa 2 espaços, "." e "=" ocupam 1 cada
-        for i, btn in enumerate(linha):
-            if cols[i].button(btn, key=f"btn_{btn}", use_container_width=True):
-                if btn == "=":
-                    try:
-                        st.session_state.expressao = str(eval(st.session_state.expressao))
-                    except:
-                        st.session_state.expressao = "Erro"
-                else:
-                    adicionar(btn)
+# Lógica dos botões
+if "btn" in st.form_submit_button:
+    btn = st.form_submit_button["btn"]
+    if btn == "C":
+        limpar()
+    elif btn == "⌫":
+        apagar()
+    elif btn == "=":
+        try:
+            st.session_state.expressao = str(eval(st.session_state.expressao))
+        except:
+            st.session_state.expressao = "Erro"
     else:
-        cols = st.columns(4)  # 4 colunas de tamanhos iguais para as outras linhas
-        for i, btn in enumerate(linha):
-            if cols[i].button(btn, key=f"btn_{btn}", use_container_width=True):
-                if btn == "C":
-                    limpar()
-                elif btn == "⌫":
-                    apagar()
-                elif btn == "=":
-                    try:
-                        st.session_state.expressao = str(eval(st.session_state.expressao))
-                    except:
-                        st.session_state.expressao = "Erro"
-                else:
-                    adicionar(btn)
+        adicionar(btn)
